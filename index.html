@@ -784,6 +784,261 @@ Output:
                 <section>
                     <section>
                         <h2>Dive into lua Source Code</h2>
+                        <p>I will omit some code for simplicity. XD</p>
+                    </section>
+
+                    <section>
+                        <h3>How do lua store table?</h3>
+                    </section>
+
+                    <section>
+                        <h4>How do lua store table?</h4>
+
+                        <p>Definition in lobject.h:</p>
+
+                        <pre><code class="c" data-trim>
+typedef struct Table {
+  CommonHeader;
+  lu_byte flags;  /* 2^p means tagmethod(p) is not present */
+  lu_byte lsizenode;  /* log2 of size of `node' array */
+  struct Table *metatable;
+  TValue *array;  /* array part */
+  Node *node;
+  Node *lastfree;  /* any free position is before this position */
+  int sizearray;  /* size of `array' array */
+} Table;
+                        </code></pre>
+
+                        <p>lobject.c - some generic functions over Lua objects.</p>
+
+                    </section>
+
+                    <section>
+                        <h4>What does `Table` contain?</h4>
+                        <ul>
+                            <li>`CommonHeader`: contained in every gc-type struture (see `union GCObject` in lstate.h)</li>
+                            <li>metatable-related fields: `flags`, `metatable`</li>
+                            <li>A `Table` instance has at lease three continued areas in memory:
+                            <ul>
+                                <li>The `Table` instance itself.</li>
+                                <li>`array`: array part of `Table`</li>
+                                <li>`node`: hashtable part of `Table`</li>
+                            </ul>
+                            </li>
+                            <li>Fields of recording the size:
+                            <ul>
+                                <li>size of array part: `sizearray`</li>
+                                <li>size of hashtable part: 2^`lsizenode`</li>
+                                <pre><code class="c" data-trim>
+#define twoto(x)    (1<<(x))
+#define sizenode(t) (twoto((t)->lsizenode))
+                                </code></pre>
+                            </ul>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <p>Macros related to `Table`:</p>
+                        <pre><code class="c" data-trim>
+#define gnode(t,i)  (&(t)->node[i])
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>What is `Node`?</h4>
+
+                        <pre><code class="c" data-trim>
+typedef struct Node {
+  TValue i_val;
+  TKey i_key;
+} Node;
+                        </code></pre>
+
+                        <p>`Node` is the structure for key-value pair</p>
+                    </section>
+
+                    <section>
+                        <p>Macros related to `Node`:</p>
+                        <pre><code class="c" data-trim>
+#define gval(n)     (&(n)->i_val)
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>What is `TValue` then?</h4>
+
+                        <pre><code class="c" data-trim>
+typedef struct lua_TValue TValue;
+
+/*
+** Tagged Values. This is the basic representation of values in Lua,
+** an actual value plus a tag with its type.
+*/
+
+struct lua_TValue {
+  Value value_;
+  int tt_;
+};
+                        </code></pre>
+
+                        <p>`TValue` = Tagged Value</p>
+                        <ul>
+                            <li>`TValue` contains the value and a type tag</li>
+                            <li>Lua represents values as tagged unions, that is, as pairs (t, v), where t is an integer tag identifying the type of the value v, which is a union of C types implementing Lua types.</li>
+                            <li>omitted source code: NaN Trick</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <p>Macros related to `TValue`:</p>
+                        <pre><code class="c" data-trim>
+#define val_(o)     ((o)->value_)
+
+/* raw type tag of a TValue */
+#define rttype(o)   ((o)->tt_)
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>What is `Value`?</h4>
+
+                        <pre><code class="c" data-trim>
+union Value {
+  GCObject *gc;    /* collectable objects */
+  void *p;         /* light userdata */
+  int b;           /* booleans */
+  lua_CFunction f; /* light C functions */
+  numfield         /* numbers */
+};
+                        </code></pre>
+
+<!--
+                        <p>Can `Value` distinguish different types of lua value?</p>
+-->
+
+                        <p>`Value` can be:</p>
+                        <ul>
+                            <li>nil? No! Tag of `TValue` is enough</li>
+                            <li>boolean? Yes! `Value` = `b`</li>
+                            <li>number? Yes! `Value` = `numfield`</li>
+                            <li>light userdata? Yes! `Value` = `p`</li>
+                            <li>light C functions? Yes! `Value` = `f`</li>
+                            <li>string, table, other function, heavy userdata, thread? `Value` = `gc`</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4>What is `GCObject` then?</h4>
+
+                        <p>lstate.h</p>
+
+                        <pre><code class="c" data-trim>
+/*
+** Union of all collectable objects
+*/
+typedef union GCObject GCObject;
+
+union GCObject {
+  GCheader gch;  /* common header */
+  union TString ts;
+  union Udata u;
+  union Closure cl;
+  struct Table h;
+  struct Proto p;
+  struct UpVal uv;
+  struct lua_State th;  /* thread */
+};
+                        </code></pre>
+
+                        <p>lstate.c - global state. Includes functions for opening and closing Lua states (lua_newstate/lua_close) and threads (luaE_newthread / luaE_freethread).</p>
+                    </section>
+
+                    <section>
+                        <h4>What is `TKey`?</h4>
+
+                        <pre><code class="c" data-trim>
+typedef union TKey {
+  struct {
+    Value value_;
+    int tt_;
+    struct Node *next;  /* for chaining */
+  } nk;
+  TValue tvk;
+} TKey;
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <p>Macros related to `TKey`:</p>
+                        <pre><code class="c" data-trim>
+#define gkey(n)     (&(n)->i_key.tvk)
+#define gnext(n)    ((n)->i_key.nk.next)
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>How does the tag distinguish different types of lua value?</h4>
+
+                        <p>lua.h</p>
+                        <pre><code class="c" data-trim>
+/*
+** basic types
+*/
+#define LUA_TNONE       (-1)
+
+#define LUA_TNIL        0
+#define LUA_TBOOLEAN        1
+#define LUA_TLIGHTUSERDATA  2
+#define LUA_TNUMBER     3
+#define LUA_TSTRING     4
+#define LUA_TTABLE      5
+#define LUA_TFUNCTION       6
+#define LUA_TUSERDATA       7
+#define LUA_TTHREAD     8
+
+#define LUA_NUMTAGS     9
+                        </code></pre>
+
+                    </section>
+
+                    <section>
+                        <h4>How does the tag distinguish different types of lua value?</h4>
+
+                        <p>lobject.h</p>
+
+                        <pre><code class="c" data-trim>
+/* raw type tag of a TValue */
+#define rttype(o)   ((o)->tt_)
+
+/* Macros to test type */
+#define checktag(o,t)       (rttype(o) == (t))
+
+#define ttistable(o)        checktag((o), LUA_TTABLE)
+                        </code></pre>
+
+                        <p>Simplified code here</p>
+                    </section>
+
+                    <section>
+                        <h3>What happens when creating a `Table`?</h3>
+                    </section>
+
+                    <section>
+                        <h4>General procedure of lua program:</h4>
+                        <ul>
+                        <pre><code class="c" data-trim>
+#define luaL_dofile(L, fn) \
+	(luaL_loadfile(L, fn) || lua_pcall(L, 0, LUA_MULTRET, 0))
+                        </code></pre>
+                            <li>`main` function is in lua.c or luac.c</li>
+                            <li>`main` function calls `lua_pcall`, which is a macro:</li>
+                        <pre><code class="c" data-trim>
+#define lua_pcall(L,n,r,f)  lua_pcallk(L, (n), (r), (f), 0, NULL)
+                        </code></pre>
+                            <li>`lua_pcallk` calls `luaD_call` in lapi.c</li>
+                            <li>`luaD_call` call `luaV_execute` in ldo.c`</li>
+                        </ul>
                     </section>
 
                     <section>
