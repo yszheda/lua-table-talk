@@ -1,0 +1,859 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/sky.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+                    <h1>"table" in lua 5.2</h1>
+                </section>
+
+                <section>
+                    <h2>Outline</h2>
+                    <ul>
+                        <li>Basic of lua "table"</li>
+                        <li>Adapt lua "table" for multiple data structure</li>
+                        <li>Dive into lua "table" source code</li>
+                    </ul>
+                </section>
+
+				<section>
+                    <h2>Overview of lua</h2>
+                    <ul>
+                        <li>dynamically-type: types are attached to values rather than to variables.</li>
+                        <li>basic types (first-class):
+                        <ol>
+                            <li>nil (like "None" in Python, including undefined variables)</li>
+                            <li>boolean: true, false</li>
+                            <li>number: double-precision floating-point numbers (like "double" in C)</li>
+                            <li>string: immutable (once internalized, cannot be changed)</li>
+                            <li>table: associative arrays</li>
+                            <li>function: Lua functions, C functions</li>
+                            <li>heavy userdata</li>
+                            <li>light userdata</li>
+                            <li>thread: coroutines</li>
+                        </ol>
+                        </li>
+                    </ul>
+
+					<aside class="notes">
+					</aside>
+                </section>
+
+				<section>
+                    <h2>Overview of table in lua</h2>
+                    <ul>
+                        <li>Tables are the main — in fact, the only — data-structuring mechanism in Lua.</li>
+                        <li>Tables in Lua are associative arrays, that is, they can be indexed by any value (except nil) and can hold values of any type.</li>
+                        <li>Tables are dynamic in the sense that they may grow when data is added to them (by assigning a value to a hitherto non-existent field) and shrink when data is removed from them (by assigning nil to a field).</li>
+                    </ul>
+
+					<aside class="notes">
+					</aside>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Basic</h2>
+                    </section>
+
+                    <section>
+                        <h3>Table Creation</h3>
+                        <pre><code class="lua" data-trim>
+-- Empty table
+local t1 = {}
+
+-- Table as an array
+local t2 = { 1, 2, "str", t1 }
+
+-- Table as a hashtable
+local t3 = {
+    ["k1"] = "v1",
+    k2 = "v2",
+}
+
+-- Table as mixed data structure of array and hashtable
+local t4 = {
+    "e1",           -- stored in the array part
+    ["k1"] = "v1",  -- stored in the hash part
+    k2 = "v2",      -- stored in the hash part
+}
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h3>Table As An Array</h3>
+                        <p>Array Operations:</p>
+                        <br>
+                        <ul>
+                            <li>Set the element of position "n"</li>
+                            <li>Get the element of position "n"</li>
+                            <li>Get the number of elements</li>
+                            <li>Iterate over all elements</li>
+                            <li>Delete the element of position "n"</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Setter</h4>
+                        <p>Set the element of position "n"</p>
+
+                        <blockquote>
+                            NOTE: index in lua starts from 1
+                        </blockquote>
+
+                        <pre><code class="lua" data-trim>
+-- Way #1: specify the index
+local t = {}
+t[1] = "e1"
+t[2] = "e2"
+t[3] = "e3"
+t[4] = "e4"
+                        </code></pre>
+
+                        <pre><code class="lua" data-trim>
+-- Way #2: use table.insert (list, [pos,] value)
+local t = {}
+table.insert(t, 1, "e1")
+table.insert(t, 2, "e2")
+-- table.insert(t, x) inserts x at the end of list t
+table.insert(t, "e3")
+table.insert(t, "e4")
+                        </code></pre>
+
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.insert">manual of table.insert</a></p>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Getter</h4>
+                        <p>Get the element of position "n"</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {"e1", "e2", "e3", "e4"}
+-- Get the fourth element
+print(t[4])
+
+--[[
+Output:
+e4
+]]
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Get element number</h4>
+                        <p>Get the number of elements</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {"e1", "e2", "e3", "e4"}
+
+-- Way #1: the length operator "#"
+print(#t)
+
+--[[
+Output:
+4
+]]
+
+-- Way #2
+--[[
+table.unpack(t) returns "e1", "e2", "e3", "e4"
+so it becomes:
+print(select('#', "e1", "e2", "e3", "e4"))
+]]
+print(select('#', table.unpack(t)))
+                        </code></pre>
+
+                        <p>Refer to </p>
+                        <ul>
+                            <li><a href="https://www.lua.org/manual/5.2/manual.html#3.4.6">manual of the length operator "#"</a></li>
+                            <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-select">manual of select</a></li>
+                            <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack">manual of table.unpack</a></li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Iteration</h4>
+                        <p>Iterate over all elements</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {"e1", "e2", "e3", "e4"}
+
+-- Forward iteration
+for i = 1, 4 do
+    print(t[i])
+end
+
+--[[
+Output:
+e1
+e2
+e3
+e4
+]]
+
+-- More general way:
+for i = 1, #t do
+    print(t[i])
+end
+
+--[[
+Output:
+e1
+e2
+e3
+e4
+]]
+
+-- Backward iteration: 
+-- for i = start, end, step do
+-- end
+for i = #t, 1, -1 do
+    print(t[i])
+end
+
+
+--[[
+Output:
+e4
+e3
+e2
+e1
+]]
+                        </code></pre>
+
+                        <p>There's another way of using an <b>iterator</b>. We will talk about that later.</p>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Delete</h4>
+                        <p>Delete the element of position "n"</p>
+
+                        <pre><code class="lua" data-trim>
+-- Way #1: set the specified element as nil
+local t = {"e1", "e2", "e3", "e4"}
+
+-- Delete the third element
+t[3] = nil
+
+--[[
+NOTE:
+1. lua table will not pack the elements backward to fill the empty slot
+2. the number of elements will not change
+]]
+print("The number of elements:", #t)
+for i = 1, #t do
+    print(t[i])
+end
+
+--[[
+Output:
+The number of elements: 4
+e1
+e2
+nil
+e4
+]]
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Delete</h4>
+                        <p>Delete the element of position "n"</p>
+
+                        <pre><code class="lua" data-trim>
+-- Way #2: use table.remove (list [, pos])
+local t = {"e1", "e2", "e3", "e4"}
+
+table.remove(t, 3)
+print("The number of elements:", #t)
+for i = 1, #t do
+    print(t[i])
+end
+
+--[[
+Output:
+The number of elements: 3
+e1
+e2
+e4
+]]
+
+table.remove(t)
+print("The number of elements:", #t)
+for i = 1, #t do
+    print(t[i])
+end
+
+--[[
+Output:
+The number of elements: 2
+e1
+e2
+]]
+                        </code></pre>
+
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.delete">manual of table.delete</a></p>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Delete</h4>
+                        <p>Common misuse of table.delete in loop</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {1, 2, 3, 4}
+
+for i = 1, #t do
+    if t[i] < 4 then
+        table.remove(t, i)
+    end
+end
+
+--[[
+Opps...
+lua: xxx.lua:4: attempt to compare nil with number
+stack traceback:
+        xxx.lua:4: in main chunk
+        [C]: in ?
+
+]]
+                        </code></pre>
+
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Delete</h4>
+                        <p>Straightforward solution: use backward iteration</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {1, 2, 3, 4}
+
+for i = #t, 1, -1 do
+    if t[i] < 4 then
+        table.remove(t, i)
+    end
+end
+
+for i = 1, #t do
+    print(t[i])
+end
+
+--[[
+Output:
+4
+]]
+                        </code></pre>
+
+                        <p>We will see another misuse case of table.remove when we discuss iterator ;)</p>
+                    </section>
+
+                    <section>
+                        <h3>Table As A Hashtable</h3>
+                        <p>Hashtable Operations:</p>
+                        <br>
+                        <ul>
+                            <li>Set the value of key "k"</li>
+                            <li>Get the value of key "k"</li>
+                            <li>Delete the value of key "k"</li>
+                            <li>Iterate over all key-value pairs</li>
+                            <li>Get the number of key-value pairs</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4>Table As A Hashtable: Setter</h4>
+
+                        <pre><code class="lua" data-trim>
+local t = {}
+
+-- Way #1
+t["key"] = "value"
+
+-- Way #2: syntactic sugar
+t.key = "value"
+
+-- Compare with the following code:
+local key = "key"
+t[key] = "value"
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Table As A Hashtable: Setter</h4>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    "key" = "value",
+}
+
+print("t[\"key\"] = ", t["key"])
+print("t.key = ", t.key)
+
+local k = "key"
+print("t[k] = ", t[k])
+-- t.k is equivalent to t["k"]
+print("t.k = ", t.k)
+
+--[[
+Output:
+t["key"] =      value
+t.key =         value
+t[k] =  value
+t.k =   nil
+]]
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Table As A Hashtable: Delete</h4>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    "key" = "value",
+}
+
+t.key = nil
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Table As A Hashtable: Iteration</h4>
+
+                        <p>Meet "next (table [, index])"</p>
+
+                        <blockquote>
+                            <p style="font-size: 18px;">Allows a program to traverse all fields of a table. Its first argument is a table and its second argument is an index in this table. next returns the next index of the table and its associated value. When called with nil as its second argument, next returns an initial index and its associated value. When called with the last index, or with nil in an empty table, next returns nil. If the second argument is absent, then it is interpreted as nil. In particular, you can use next(t) to check whether a table is empty.</p>
+                        </blockquote>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    k1 = "v1",
+    k2 = "v2",
+    k3 = "v3",
+}
+
+local k, v
+-- Note: equivalent to:
+-- local k = nil
+-- local v = nil
+for i = 1, 3 do
+    k, v = next(t, k)
+    print(k, v)
+end
+
+-- NOTE: The order in which the indices are enumerated is not specified, even for numeric indices.
+--[[
+Output:
+k1      v1
+k3      v3
+k2      v2
+]]
+                        </code></pre>
+
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-next">manual of next</a></p>
+                    </section>
+
+                    <section>
+                        <h4>Table As A Hashtable: Iteration</h4>
+                        <p>What if we don't know there's three key-value pairs in the table `t`?</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    k1 = "v1",
+    k2 = "v2",
+    k3 = "v3",
+}
+
+local k, v = next(t, k)
+while k do
+-- Note: equivalent to:
+-- while k ~= nil do
+    print(k, v)
+    k, v = next(t, k)
+end
+
+--[[
+Output:
+k2      v2
+k1      v1
+k3      v3
+]]
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Iterator</h4>
+                        <p>More advance: meet "generic for" in lua</p>
+
+                        <pre><code class="lua" data-trim>
+for {var-list} in {exp-list} do
+    {body}
+end
+                        </code></pre>
+
+                        <p>We can write an iterator and use it in the generic for loop!</p>
+                    </section>
+
+                    <section>
+                        <h4>Iterator</h4>
+                        <p>Hand-written iterator (V1):</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    k1 = "v1",
+    k2 = "v2",
+    k3 = "v3",
+}
+
+local function iter(t)
+    local last_k
+    return function()
+        local v
+        last_k, v = next(t, last_k)
+        return last_k, v
+    end
+end
+
+-- Use the iterator in the generic for loop
+for k, v in iter(t) do
+    print(k, v)
+end
+
+--[[
+Output:
+k3      v3
+k2      v2
+k1      v1
+]]
+
+-- Use the iterator to rewrite the previous while loop
+local producer = iter(t)
+local k, v = producer()
+while k do
+    print(k, v)
+    k, v = producer()
+end
+
+--[[
+Output:
+k3      v3
+k2      v2
+k1      v1
+]]
+                        </code></pre>
+
+                        <p>It would be difficult to understand if you don't know anything about closure or lambda! :(</p>
+                    </section>
+
+                    <section>
+                        <h4>Iterator</h4>
+                        <p>Hand-written iterator (V2): 
+                        we can pass a function and its parameters in {exp-list} of "generic for".
+                        </p>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    k1 = "v1",
+    k2 = "v2",
+    k3 = "v3",
+}
+
+for k, v in next, t do
+    print(k, v)
+end
+
+--[[
+Output:
+k3      v3
+k2      v2
+k1      v1
+]]
+                        </code></pre>
+
+                        <ul>
+                            <li>Simpler code :)</li>
+                            <li>It would still be difficult to understand if you don't know functions in lua are first-class variables! :(</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4>Iterator</h4>
+                        <p>There's a built-in iterator: "pairs"! XD</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    k1 = "v1",
+    k2 = "v2",
+    k3 = "v3",
+}
+
+for k, v in pairs(t) do
+    print(k, v)
+end
+
+--[[
+Output:
+k3      v3
+k1      v1
+k2      v2
+]]
+                        </code></pre>
+
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-pairs">manual of pairs</a></p>
+                    </section>
+
+                    <section>
+                        <h4>Iterator</h4>
+                        <p>There's another built-in iterator for array: "ipairs"! XD</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {"e1", "e2", "e3", "e4"}
+
+-- Only forward iteration
+for i, v in ipairs(t) do
+    print(i, v)
+end
+
+--[[
+Output:
+1       e1
+2       e2
+3       e3
+4       e4
+]]
+                        </code></pre>
+
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-ipairs">manual of ipairs</a></p>
+                    </section>
+
+                    <section>
+                        <p>Another common misuse of table.delete in loop</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {1, 2, 3, 4}
+
+for i, v in ipairs(t) do
+    print("Access the element: ", v)
+    if v < 4 then
+        table.remove(t, i)
+    end
+end
+
+print("Result:")
+for i, v in ipairs(t) do
+    print(i, v)
+end
+
+--[[
+Output:
+Access the element:     1
+Access the element:     3
+Result:
+1       2
+2       4
+]]
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Table As A Hashtable: Get the Number of key-value Pairs</h4>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    k1 = "v1",
+    k2 = "v2",
+    k3 = "v3",
+}
+
+-- Try the length operator "#":
+print(#t)
+
+--[[
+Output:
+0
+]]
+                        </code></pre>
+
+                        <p>The length operator "#" only deals with the array part of table. :(</p>
+                    </section>
+
+                    <section>
+                        <h4>Table As A Hashtable: Get the Number of key-value Pairs</h4>
+                        <p>Since we know how to iterator over the table, we know how to count all the key-value pairs. :)</p>
+
+                        <pre><code class="lua" data-trim>
+local t = {
+    k1 = "v1",
+    k2 = "v2",
+    k3 = "v3",
+}
+
+local cnt = 0
+for i, v in pairs(t) do
+    cnt = cnt + 1
+end
+
+print(cnt)
+
+--[[
+Output:
+3
+]]
+                        </code></pre>
+
+                        <p>Complexity: O(N)</p>
+                    </section>
+
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Data Structure</h2>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Dive into lua Source Code</h2>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
