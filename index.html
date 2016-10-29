@@ -766,9 +766,99 @@ end
                     </section>
 
                     <section>
-                        <h2></h2>
-                        <p>
-                        </p>
+                        <h3>Queues and Double Queues</h3>
+
+                        <pre><code class="lua" data-trim>
+local List = {}
+
+function List.new()
+    return {first = 0, last = -1}
+end
+
+function List.pushleft(list, value)
+    local first = list.first - 1
+    list.first = first
+    list[first] = value
+end
+
+function List.pushright(list, value)
+    local last = list.last + 1
+    list.last = last
+    list[last] = value
+end
+
+function List.popleft(list)
+    local first = list.first
+    if first > list.last then error("list is empty") end
+    local value = list[first]
+    list[first] = nil        -- to allow garbage collection
+    list.first = first + 1
+    return value
+end
+
+function List.popright(list)
+    local last = list.last
+    if list.first > last then error("list is empty") end
+    local value = list[last]
+    list[last] = nil         -- to allow garbage collection
+    list.last = last - 1
+    return value
+end
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h3>Sets</h3>
+
+                        <pre><code class="lua" data-trim>
+local Set = {}
+
+function Set.new()
+    return {}
+end
+
+function Set.add(set, element)
+    set[element] = true
+end
+
+function Set.has(set, element)
+    return set[element]
+end
+
+function Set.union(set1, set2)
+    local union = {}
+    for _, set in ipairs({set1, set2}) do
+        for k, _ in pairs(set1) do
+            union[k] = true
+        end
+    end
+    return union
+end
+
+--[[
+general union function
+function Set.union(...)
+    local union = {}
+    for _, set in ipairs({...}) do
+        for k, _ in pairs(set) do
+            union[k] = true
+        end
+    end
+    return union
+end
+]]
+
+function Set.intersect(set1, set2)
+    local intersect = {}
+    for k, _ in pairs(set1) do
+        intersect[k] = true
+    end
+    for k, _ in pairs(intersect) do
+        intersect[k] = set2[k]
+    end
+    return intersect
+end
+                        </code></pre>
                     </section>
 
                     <section>
@@ -931,7 +1021,7 @@ union Value {
   void *p;         /* light userdata */
   int b;           /* booleans */
   lua_CFunction f; /* light C functions */
-  numfield         /* numbers */
+  lua_Number n;    /* numbers */
 };
                         </code></pre>
 
@@ -942,8 +1032,18 @@ union Value {
                         <p>`Value` can be:</p>
                         <ul>
                             <li>nil? No! Tag of `TValue` is enough</li>
+                            <pre><code class="c" data-trim>
+#define settt_(o,t) ((o)->tt_=(t))
+#define setnilvalue(obj) settt_(obj, LUA_TNIL)
+                            </code></pre>
                             <li>boolean? Yes! `Value` = `b`</li>
                             <li>number? Yes! `Value` = `numfield`</li>
+                            <pre><code class="c" data-trim>
+#define val_(o)		((o)->value_)
+#define num_(o)		(val_(o).n)
+#define setnvalue(obj,x) \
+  { TValue *io=(obj); num_(io)=(x); settt_(io, LUA_TNUMBER); }
+                            </code></pre>
                             <li>light userdata? Yes! `Value` = `p`</li>
                             <li>light C functions? Yes! `Value` = `f`</li>
                             <li>string, table, other function, heavy userdata, thread? `Value` = `gc`</li>
@@ -1037,6 +1137,8 @@ typedef union TKey {
 #define checktag(o,t)       (rttype(o) == (t))
 
 #define ttistable(o)        checktag((o), LUA_TTABLE)
+
+#define hvalue(o)   check_exp(ttistable(o), &val_(o).gc->h)
                         </code></pre>
 
                         <p>Simplified code here</p>
