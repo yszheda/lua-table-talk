@@ -732,15 +732,37 @@ Output:
                     </section>
 
                     <section>
-                        <h2></h2>
-                        <p>
-                        </p>
+                        <h3>Matrices / Multi-Dimensional Arrays</h3>
+
+                        <p>Like C array:</p>
+
+                        <pre><code class="lua" data-trim>
+-- Create a matrix of zeros with dimensions N by M
+
+-- Way #1
+mt = {}             -- create the matrix
+for i = 1, N do
+    mt[i] = {}      -- create a new row
+    for j = 1, M do
+        mt[i][j] = 0
+    end
+end
+
+-- Way #2
+mt = {}             -- create the matrix
+for i = 1, N do
+    for j = 1, M do
+        mt[i*M + j] = 0
+    end
+end
+                        </code></pre>
                     </section>
 
                     <section>
-                        <h2></h2>
-                        <p>
-                        </p>
+                        <h3>Linked Lists</h3>
+
+                        <pre><code class="lua" data-trim>
+                        </code></pre>
                     </section>
 
                     <section>
