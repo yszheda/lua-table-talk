@@ -1,0 +1,15 @@
+digraph Table
+{
+rankdir = LR;
+node[shape = record];
+
+table[label = "CommonHeader | flags | lsizenode | metatable | <array> array | <hash> node | <lastfree> lastfree | sizearray"];
+
+array[label = "<head> | | ... |"];
+
+hash[label = "<head> | | ... | <tail>"];
+
+table:array -> array:head;
+table:hash -> hash:head;
+table:lastfree -> hash:tail;
+}
