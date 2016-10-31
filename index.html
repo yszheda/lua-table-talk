@@ -766,6 +766,13 @@ end
                     </section>
 
                     <section>
+                        <h3>Stack</h3>
+
+                        <pre><code class="lua" data-trim>
+                        </code></pre>
+                    </section>
+
+                    <section>
                         <h3>Queues and Double Queues</h3>
 
                         <pre><code class="lua" data-trim>
@@ -825,10 +832,11 @@ function Set.has(set, element)
     return set[element]
 end
 
+-- Union of two sets
 function Set.union(set1, set2)
     local union = {}
     for _, set in ipairs({set1, set2}) do
-        for k, _ in pairs(set1) do
+        for k, _ in pairs(set) do
             union[k] = true
         end
     end
@@ -836,7 +844,9 @@ function Set.union(set1, set2)
 end
 
 --[[
-general union function
+For advanced lua user, you can write a more general function for set union.
+e.g.
+
 function Set.union(...)
     local union = {}
     for _, set in ipairs({...}) do
@@ -848,16 +858,68 @@ function Set.union(...)
 end
 ]]
 
+-- Intersection of two sets
 function Set.intersect(set1, set2)
     local intersect = {}
     for k, _ in pairs(set1) do
-        intersect[k] = true
-    end
-    for k, _ in pairs(intersect) do
         intersect[k] = set2[k]
     end
     return intersect
 end
+
+--[[
+For advanced lua user, you can write a more general function for set intersection.
+e.g.
+
+-- This is a naive version of counting elements:
+
+function Set.intersect(...)
+    local intersect = {}
+    local set_list = {...}
+    for _, set in ipairs(set_list) do
+        for k, _ in pairs() do
+            if intersect[k] then
+                intersect[k] = intersect[k] + 1
+            else
+                intersect[k] = 1
+            end
+        end
+    end
+
+    local num_of_set = #set_list
+    for k, num in pairs(intersect) do
+        if num < num_of_set then
+            intersect[k] = nil
+        else
+            intersect[k] = true
+        end
+    end
+
+    return intersect
+end
+
+-- This is a better version:
+
+function Set.intersect(...)
+    local intersect = {}
+    local set_list = {...}
+    local first_set = set_list[1]
+    local num_of_set = #set_list
+    for k, _ in pairs(first_set) do
+        intersect[k] = true
+        for i = 2, num_of_set do
+            local set = set_list[i]
+            -- equivalent to: 
+            -- set[k] == nil or set[k] == false
+            if not set[k] then
+                intersect[k] = nil
+                break
+            end
+        end
+    end
+    return intersect
+end
+]]
                         </code></pre>
                     </section>
 
