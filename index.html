@@ -1072,93 +1072,6 @@ struct lua_TValue {
                     </section>
 
                     <section>
-                        <h4>What is `Value`?</h4>
-
-                        <pre><code class="c" data-trim>
-union Value {
-  GCObject *gc;    /* collectable objects */
-  void *p;         /* light userdata */
-  int b;           /* booleans */
-  lua_CFunction f; /* light C functions */
-  lua_Number n;    /* numbers */
-};
-                        </code></pre>
-
-<!--
-                        <p>Can `Value` distinguish different types of lua value?</p>
--->
-
-                        <p>`Value` can be:</p>
-                        <ul>
-                            <li>nil? No! Tag of `TValue` is enough</li>
-                            <pre><code class="c" data-trim>
-#define settt_(o,t) ((o)->tt_=(t))
-#define setnilvalue(obj) settt_(obj, LUA_TNIL)
-                            </code></pre>
-                            <li>boolean? Yes! `Value` = `b`</li>
-                            <li>number? Yes! `Value` = `numfield`</li>
-                            <pre><code class="c" data-trim>
-#define val_(o)		((o)->value_)
-#define num_(o)		(val_(o).n)
-#define setnvalue(obj,x) \
-  { TValue *io=(obj); num_(io)=(x); settt_(io, LUA_TNUMBER); }
-                            </code></pre>
-                            <li>light userdata? Yes! `Value` = `p`</li>
-                            <li>light C functions? Yes! `Value` = `f`</li>
-                            <li>string, table, other function, heavy userdata, thread? `Value` = `gc`</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h4>What is `GCObject` then?</h4>
-
-                        <p>lstate.h</p>
-
-                        <pre><code class="c" data-trim>
-/*
-** Union of all collectable objects
-*/
-typedef union GCObject GCObject;
-
-union GCObject {
-  GCheader gch;  /* common header */
-  union TString ts;
-  union Udata u;
-  union Closure cl;
-  struct Table h;
-  struct Proto p;
-  struct UpVal uv;
-  struct lua_State th;  /* thread */
-};
-                        </code></pre>
-
-                        <p>lstate.c - global state. Includes functions for opening and closing Lua states (lua_newstate/lua_close) and threads (luaE_newthread / luaE_freethread).</p>
-                    </section>
-
-                    <section>
-                        <h4>What is `TKey`?</h4>
-
-                        <pre><code class="c" data-trim>
-typedef union TKey {
-  struct {
-    Value value_;
-    int tt_;
-    struct Node *next;  /* for chaining */
-  } nk;
-  TValue tvk;
-} TKey;
-                        </code></pre>
-                    </section>
-
-                    <section>
-                        <p>Macros related to `TKey`:</p>
-                        <pre><code class="c" data-trim>
-#define gkey(n)     (&(n)->i_key.tvk)
-#define gnext(n)    ((n)->i_key.nk.next)
-                        </code></pre>
-                    </section>
-
-                    <section>
                         <h4>How does the tag distinguish different types of lua value?</h4>
 
                         <p>lua.h</p>
@@ -1204,6 +1117,146 @@ typedef union TKey {
                     </section>
 
                     <section>
+                        <h4>What is `Value`?</h4>
+
+                        <pre><code class="c" data-trim>
+union Value {
+  GCObject *gc;    /* collectable objects */
+  void *p;         /* light userdata */
+  int b;           /* booleans */
+  lua_CFunction f; /* light C functions */
+  lua_Number n;    /* numbers */
+};
+                        </code></pre>
+
+<!--
+                        <p>Can `Value` distinguish different types of lua value?</p>
+-->
+
+                        <p>`Value` can be:</p>
+                        <ul>
+                            <li>nil? No! Tag of `TValue` is enough</li>
+                        </ul>
+                        <pre><code class="c" data-trim>
+#define settt_(o,t) ((o)->tt_=(t))
+#define setnilvalue(obj) settt_(obj, LUA_TNIL)
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>What is `Value`?</h4>
+
+                        <pre><code class="c" data-trim>
+union Value {
+  GCObject *gc;    /* collectable objects */
+  void *p;         /* light userdata */
+  int b;           /* booleans */
+  lua_CFunction f; /* light C functions */
+  lua_Number n;    /* numbers */
+};
+                        </code></pre>
+
+                        <p>`Value` can be:</p>
+                        <ul>
+                            <li>boolean? Yes! `Value` = `b`</li>
+                            <li>number? Yes! `Value` = `n`
+                            <pre><code class="c" data-trim>
+#define val_(o)		((o)->value_)
+#define num_(o)		(val_(o).n)
+#define setnvalue(obj,x) \
+  { TValue *io=(obj); num_(io)=(x); settt_(io, LUA_TNUMBER); }
+                            </code></pre>
+                            </li>
+                            <li>light userdata? Yes! `Value` = `p`</li>
+                            <li>light C functions? Yes! `Value` = `f`</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4>What is `Value`?</h4>
+
+                        <pre><code class="c" data-trim>
+union Value {
+  GCObject *gc;    /* collectable objects */
+  void *p;         /* light userdata */
+  int b;           /* booleans */
+  lua_CFunction f; /* light C functions */
+  lua_Number n;    /* numbers */
+};
+                        </code></pre>
+
+                        <p>`Value` can be:</p>
+                        <ul>
+                            <li>string, table, other function, heavy userdata, thread? `Value` = `gc`</li>
+                        </ul>
+                        <pre><code class="c" data-trim>
+#define sethvalue(L,obj,x) \
+  { TValue *io=(obj); \
+    val_(io).gc=cast(GCObject *, (x)); settt_(io, LUA_TTABLE); }
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>What is `GCObject` then?</h4>
+
+                        <p>lstate.h</p>
+
+                        <pre><code class="c" data-trim>
+/*
+** Union of all collectable objects
+*/
+typedef union GCObject GCObject;
+
+union GCObject {
+  GCheader gch;  /* common header */
+  union TString ts;
+  union Udata u;
+  union Closure cl;
+  struct Table h;
+  struct Proto p;
+  struct UpVal uv;
+  struct lua_State th;  /* thread */
+};
+                        </code></pre>
+
+                        <p>lstate.c - global state. Includes functions for opening and closing Lua states (lua_newstate/lua_close) and threads (luaE_newthread / luaE_freethread).</p>
+                    </section>
+
+                    <section>
+                        <h4>What is `TValue`?</h4>
+                        <img align="middle" height="600px;" data-src="img/TValue.png">
+                    </section>
+
+                    <section>
+                        <h4>What is `TKey`?</h4>
+
+                        <pre><code class="c" data-trim>
+typedef union TKey {
+  struct {
+    Value value_;
+    int tt_;
+    struct Node *next;  /* for chaining */
+  } nk;
+  TValue tvk;
+} TKey;
+                        </code></pre>
+                    </section>
+
+
+                    <section>
+                        <p>Macros related to `TKey`:</p>
+                        <pre><code class="c" data-trim>
+#define gkey(n)     (&(n)->i_key.tvk)
+#define gnext(n)    ((n)->i_key.nk.next)
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Combine `TValue` and `TKey` into `Node`</h4>
+                        <img align="middle" data-src="img/Node.png">
+                    </section>
+
+                    <section>
                         <h3>What happens when creating a `Table`?</h3>
                     </section>
 
@@ -1213,6 +1266,151 @@ typedef union TKey {
                         <img align="middle" data-src="img/lua-procedure.png">
 
                         <p>Here we care about the execution phrase, and we will start our analysis from function `luaV_execute`.</p>
+                    </section>
+
+                    <section>
+                        <h4>Start from the naive example</h4>
+                        <pre><code class="lua" data-trim>
+local t = {}
+                        </code></pre>
+
+                        <pre><code class="assembly" data-trim>
+0+ params, 2 slots, 1 upvalue, 1 local, 0 constants, 0 functions
+        1       [1]     NEWTABLE        0 0 0
+        2       [1]     RETURN          0 1
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>NEWTABLE instruction</h4>
+
+                        <blockquote>
+                            NEWTABLE A B C R(A) := {} (size = B,C)
+                        </blockquote>
+
+                        <ul>
+                            <li>Creates a new empty table at register R(A).</li>
+                            <li>B and C are the encoded size information for the array part and the hash part of the table, respectively. Appropriate values for B and C are set in order to avoid rehashing when initially populating the table with array values or hash key-value pairs. If an empty table is created, both sizes are zero.</li>
+                        </ul>
+
+                    </section>
+
+                    <section>
+                        <h4>Execute NEWTABLE in lua VM</h4>
+                        <pre><code class="c" data-trim>
+void luaV_execute (lua_State *L) {
+  CallInfo *ci = L->ci;
+  LClosure *cl;
+  TValue *k;
+  StkId base;
+ newframe:  /* reentry point when frame changes (call/return) */
+  lua_assert(ci == L->ci);
+  cl = clLvalue(ci->func);
+  k = cl->p->k;
+  base = ci->u.l.base;
+  /* main loop of interpreter */
+  for (;;) {
+    Instruction i = *(ci->u.l.savedpc++);
+    StkId ra;
+    if ((L->hookmask & (LUA_MASKLINE | LUA_MASKCOUNT)) &&
+        (--L->hookcount == 0 || L->hookmask & LUA_MASKLINE)) {
+      Protect(traceexec(L));
+    }
+    /* WARNING: several calls may realloc the stack and invalidate `ra' */
+    ra = RA(i);
+    lua_assert(base == ci->u.l.base);
+    lua_assert(base <= L->top && L->top < L->stack + L->stacksize);
+    vmdispatch (GET_OPCODE(i)) {
+      vmcase(OP_NEWTABLE,
+        int b = GETARG_B(i);
+        int c = GETARG_C(i);
+        Table *t = luaH_new(L);
+        sethvalue(L, ra, t);
+        if (b != 0 || c != 0)
+          luaH_resize(L, t, luaO_fb2int(b), luaO_fb2int(c));
+        checkGC(L, ra + 1);
+      )
+    }
+  }
+}
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Execute NEWTABLE in lua VM</h4>
+                        <p>A bit comfused? We only need to trace this part of code for the naive example:</p>
+
+                        <pre><code class="c" data-trim>
+      vmcase(OP_NEWTABLE,
+        // get the operator B from the instruction
+        int b = GETARG_B(i);
+        // get the operator C from the instruction
+        int c = GETARG_C(i);
+        Table *t = luaH_new(L);
+        sethvalue(L, ra, t);
+      )
+                        </code></pre>
+
+                        <p>Now we only need to look at `luaH_new`. :)</p>
+                    </section>
+
+                    <section>
+                        <h4>Execute NEWTABLE in lua VM</h4>
+
+                        <pre><code class="c" data-trim>
+Table *luaH_new (lua_State *L) {
+  Table *t = &luaC_newobj(L, LUA_TTABLE, sizeof(Table), NULL, 0)->h;
+  t->array = NULL;
+  t->sizearray = 0;
+  setnodevector(L, t, 0);
+  return t;
+}
+
+static void setnodevector (lua_State *L, Table *t, int size) {
+  int lsize;
+  if (size == 0) {  /* no elements to hash part? */
+    t->node = cast(Node *, dummynode);  /* use common `dummynode' */
+    lsize = 0;
+  }
+  else {
+    int i;
+    lsize = luaO_ceillog2(size);
+    if (lsize > MAXBITS)
+      luaG_runerror(L, "table overflow");
+    size = twoto(lsize);
+    t->node = luaM_newvector(L, size, Node);
+    for (i=0; i<size; i++) {
+      Node *n = gnode(t, i);
+      gnext(n) = NULL;
+      setnilvalue(gkey(n));
+      setnilvalue(gval(n));
+    }
+  }
+  t->lsizenode = cast_byte(lsize);
+  t->lastfree = gnode(t, size);  /* all positions are free */
+}
+                        </code></pre>
+
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2></h2>
+                        <p>
+                        </p>
                     </section>
 
                     <section>

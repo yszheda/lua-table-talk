@@ -1,21 +1,7 @@
 digraph ds
 {
+rankdir = LR;
 compound=true;
-
-subgraph cluster_Node
-{
-node[shape = record];
-label = "TValue";
-luaNode[label = "<value> TValue i_val | <key>TKey i_key"];
-}
-
-subgraph cluster_TKey
-{
-node[shape = record];
-label = "TKey";
-nk[label = "Value value_ | int tt_ | struct Node *next"];
-tvk[label = "TValue tvk"];
-}
 
 subgraph cluster_TValue
 {
@@ -64,8 +50,6 @@ uv[label = "struct UpVal uv"];
 th[label = "struct lua_State th"];
 }
 
-luaNode:value -> TValue;
-luaNode:key -> nk;
 TValue:tag -> table;
 TValue:value-> gc;
 gc -> h;
