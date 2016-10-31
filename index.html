@@ -1279,6 +1279,12 @@ local t = {}
         1       [1]     NEWTABLE        0 0 0
         2       [1]     RETURN          0 1
                         </code></pre>
+
+                        <p>Instructions related to table creation:</p>
+
+                        <pre><code class="assembly" data-trim>
+        1       [1]     NEWTABLE        0 0 0
+                        </code></pre>
                     </section>
 
                     <section>
@@ -1342,11 +1348,12 @@ void luaV_execute (lua_State *L) {
 
                         <pre><code class="c" data-trim>
       vmcase(OP_NEWTABLE,
-        // get the operator B from the instruction
+        // Get the operator B from the instruction
         int b = GETARG_B(i);
-        // get the operator C from the instruction
+        // Get the operator C from the instruction
         int c = GETARG_C(i);
         Table *t = luaH_new(L);
+        // Remember this macro? ;)
         sethvalue(L, ra, t);
       )
                         </code></pre>
@@ -1396,25 +1403,57 @@ static void setnodevector (lua_State *L, Table *t, int size) {
                     </section>
 
                     <section>
-                        <h2></h2>
-                        <p>
-                        </p>
+                        <h4>It's simpler in our case...</h4>
+
+                        <pre><code class="c" data-trim>
+Table *luaH_new (lua_State *L) {
+  Table *t = &luaC_newobj(L, LUA_TTABLE, sizeof(Table), NULL, 0)->h;
+  t->array = NULL;
+  t->sizearray = 0;
+  t->node = cast(Node *, dummynode);  /* use common `dummynode' */
+  t->lsizenode = 0;
+  t->lastfree = gnode(t, size);  /* all positions are free */
+  return t;
+}
+                        </code></pre>
+
                     </section>
 
                     <section>
-                        <h2></h2>
-                        <p>
-                        </p>
+                        <h4>What's dummynode?</h4>
+
+                        <pre><code class="c" data-trim>
+/* macro defining a nil value */
+#define NILCONSTANT {NULL}, LUA_TNIL
+
+#define dummynode       (&dummynode_)
+
+#define isdummy(n)      ((n) == dummynode)
+
+static const Node dummynode_ = {
+  {NILCONSTANT},  /* value */
+  {{NILCONSTANT, NULL}}  /* key */
+};
+                        </code></pre>
+
+                        <p>All empty table in lua points to the same memory area. CLEVER LUA!</p>
                     </section>
 
                     <section>
-                        <h2></h2>
-                        <p>
-                        </p>
+                        <h3>What happens when creating a `Table`?</h3>
+                        <h4>What about creating a non-empty table?</h4>
+                        <p>We will come back later. ;)</p>
                     </section>
 
                     <section>
-                        <h2></h2>
+                        <h3>What happens when accessing a `Table`?</h3>
+                    </section>
+
+                    <section>
+                        <h3>Another naive example:</h3>
+                        <pre><code class="c" data-trim>
+                        </code></pre>
+
                         <p>
                         </p>
                     </section>
