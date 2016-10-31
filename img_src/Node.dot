@@ -1,4 +1,13 @@
-digraph Node
+digraph ds
 {
-
+compound=true;
+subgraph luaNode
+{
+value[label = "TValue i_val"];
+key[label = "TKey i_key"];
+}
+subgraph TValue
+{
+value[label = "Value value_"];
+}
 }

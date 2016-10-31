@@ -1,0 +1,12 @@
+digraph procedure
+{
+rankdir = LR;
+node[shape = record];
+
+text[label = "lua source code"];
+instr[label = "lua instruction"];
+exec[label = "execute in lua VM (Virtual Machine)"]
+
+text -> instr[label = "luaL_loadfile"];
+instr -> exec[label = "lua_pcall"];
+}
