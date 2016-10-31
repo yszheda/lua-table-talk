@@ -972,10 +972,7 @@ end
 
                         <pre><code class="c" data-trim>
 typedef struct Table {
-  CommonHeader;
-  lu_byte flags;  /* 2^p means tagmethod(p) is not present */
   lu_byte lsizenode;  /* log2 of size of `node' array */
-  struct Table *metatable;
   TValue *array;  /* array part */
   Node *node;
   Node *lastfree;  /* any free position is before this position */
@@ -990,14 +987,14 @@ typedef struct Table {
                     <section>
                         <h4>What does `Table` contain?</h4>
                         <ul>
-                            <li>`CommonHeader`: contained in every gc-type struture (see `union GCObject` in lstate.h)</li>
-                            <li>metatable-related fields: `flags`, `metatable`</li>
                             <li>A `Table` instance has at lease three continued areas in memory:
                             <ul>
+							<img align="middle" data-src="img/Table-simple.png">
                                 <li>The `Table` instance itself.</li>
                                 <li>`array`: array part of `Table`</li>
                                 <li>`node`: hashtable part of `Table`</li>
                             </ul>
+
                             </li>
                             <li>Fields of recording the size:
                             <ul>
@@ -1212,19 +1209,10 @@ typedef union TKey {
 
                     <section>
                         <h4>General procedure of lua program:</h4>
-                        <ul>
-                        <pre><code class="c" data-trim>
-#define luaL_dofile(L, fn) \
-	(luaL_loadfile(L, fn) || lua_pcall(L, 0, LUA_MULTRET, 0))
-                        </code></pre>
-                            <li>`main` function is in lua.c or luac.c</li>
-                            <li>`main` function calls `lua_pcall`, which is a macro:</li>
-                        <pre><code class="c" data-trim>
-#define lua_pcall(L,n,r,f)  lua_pcallk(L, (n), (r), (f), 0, NULL)
-                        </code></pre>
-                            <li>`lua_pcallk` calls `luaD_call` in lapi.c</li>
-                            <li>`luaD_call` call `luaV_execute` in ldo.c`</li>
-                        </ul>
+                        <img align="middle" data-src="img/lua-procedure-simple.png">
+                        <img align="middle" data-src="img/lua-procedure.png">
+
+                        <p>Here we care about the execution phrase, and we will start our analysis from function `luaV_execute`.</p>
                     </section>
 
                     <section>

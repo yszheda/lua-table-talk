@@ -1,0 +1,66 @@
+digraph procedure
+{
+// rankdir = LR;
+
+subgraph cluster_parser
+{
+// rankdir = TD;
+compound = true;
+node[shape = record];
+label = "parse"
+
+subgraph cluster_lauxlib_c
+{
+node [style = filled];
+shape = box;
+label = "lauxlib.c";
+"luaL_loadfile"[label = "luaL_loadfile (luaL_loadfilex)"];
+}
+
+subgraph cluster_lapi_c
+{
+node [style = filled];
+shape = box;
+label = "lapi.c";
+"lua_load"[label = "lua_load"];
+}
+
+subgraph cluster_ldo_c
+{
+node [style = filled];
+shape = box;
+label = "ldo.c";
+"luaD_protectedparser"[label = "luaD_protectedparser"];
+"f_parser"[label = "f_parser"];
+}
+
+subgraph cluster_lundump_c
+{
+node [style = filled];
+shape = box;
+label = "lundump.c";
+"luaU_undump"[label = "luaU_undump"];
+}
+
+subgraph cluster_lparser_c
+{
+node [style = filled];
+shape = box;
+label = "ldparser.c";
+"luaY_parser"[label = "luaY_parser"];
+}
+
+luaL_loadfile -> lua_load;
+lua_load -> luaD_protectedparser;
+luaD_protectedparser -> f_parser;
+f_parser -> luaU_undump[label = "binary"];
+f_parser -> luaY_parser[label = "text"];
+}
+
+subgraph cluster_execute
+{
+
+}
+
+}
+
