@@ -1,0 +1,24 @@
+digraph Table
+{
+rankdir = LR;
+node[shape = record];
+splines = line;
+
+table[label = "lu_byte lsizenode | <array> TValue *array | <hash> Node *node | <lastfree> Node *lastfree | int sizearray"];
+
+array[label = "<head> TValue | TValue | ... |"];
+
+hash[label = "{<head> TValue i_val | TKey i_key } | { TValue i_val | <key1> TKey i_key (nk) | {Value value_ | int tt_ | <next1> struct Node *next} } |  |  | { TValue i_val | <key2> TKey i_key (nk) | {Value value_ | int tt_ | <next2> struct Node *next} } | ... | { TValue i_val | <key3> TKey i_key (TValue tvk) } | ... | <tail>"];
+
+hash_key[shape = oval, label = "same hash key"]
+
+table:array -> array:head;
+table:hash -> hash:head;
+table:lastfree -> hash:tail;
+hash_key -> hash:key1[color = "red", label = "main position"];
+hash_key -> hash:key2[color = "blue", style = "dashed"];
+hash_key -> hash:key3:w[color = "blue", style = "dashed"];
+hash:next1:s -> hash:key2:n[color = "red"];
+hash:next2:s -> hash:key3:n[color = "red"];
+}
+

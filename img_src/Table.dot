@@ -1,0 +1,16 @@
+digraph Table
+{
+rankdir = LR;
+node[shape = record];
+
+table[label = "lsizenode | <array> array | <hash> node | <lastfree> lastfree | sizearray"];
+
+array[label = "<head> | | ... |"];
+
+hash[label = "{<head> i_val | i_key } | { i_val | i_key } | ... | { i_val | i_key } | ... | <tail>"];
+
+table:array -> array:head;
+table:hash -> hash:head;
+table:lastfree -> hash:tail;
+}
+
