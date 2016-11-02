@@ -141,7 +141,7 @@ table.insert(t, "e3")
 table.insert(t, "e4")
                         </code></pre>
 
-                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.insert">manual of table.insert</a></p>
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.insert">manual of <code>table.insert</code></a></p>
                     </section>
 
                     <section>
@@ -184,12 +184,13 @@ print(select('#', "e1", "e2", "e3", "e4"))
 print(select('#', table.unpack(t)))
                         </code></pre>
 
-                        <p>Refer to </p>
-                        <ul>
+                        <p style="font-size: 24px;">Refer to:
+                        <ul style="font-size: 24px;">
                             <li><a href="https://www.lua.org/manual/5.2/manual.html#3.4.6">manual of the length operator "#"</a></li>
-                            <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-select">manual of select</a></li>
-                            <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack">manual of table.unpack</a></li>
+                            <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-select">manual of <code>select</code></a></li>
+                            <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack">manual of <code>table.unpack</code></a></li>
                         </ul>
+                        </p>
                     </section>
 
                     <section>
@@ -299,6 +300,7 @@ e2
 e4
 ]]
 
+-- table.remove(t) removes the last element of list t.
 table.remove(t)
 print("The number of elements:", #t)
 for i = 1, #t do
@@ -313,12 +315,12 @@ e2
 ]]
                         </code></pre>
 
-                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.remove">manual of table.remove</a></p>
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.remove">manual of <code>table.remove</code></a></p>
                     </section>
 
                     <section>
                         <h4>Table As An Array: Delete</h4>
-                        <p>Common misuse of table.remove in loop</p>
+                        <p>Common misuse of <code>table.remove</code> in a loop</p>
 
                         <pre><code class="lua" data-trim>
 local t = {1, 2, 3, 4}
@@ -339,11 +341,38 @@ stack traceback:
 ]]
                         </code></pre>
 
+                        <p>Why?</p>
                     </section>
 
                     <section>
                         <h4>Table As An Array: Delete</h4>
-                        <p>Straightforward solution: use backward iteration</p>
+                        <p>Trace the source code using <code>print</code></p>
+
+                        <pre><code class="lua" data-trim>
+local t = {1, 2, 3, 4}
+
+for i = 1, #t do
+    print(i, t[i])
+    if t[i] < 4 then
+        table.remove(t, i)
+    end
+end
+
+--[[
+1       1
+2       3
+3       nil
+lua: xxx.lua:5: attempt to compare nil with number
+stack traceback:
+        xxx.lua:5: in main chunk
+        [C]: in ?
+]]
+                        </code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Table As An Array: Delete</h4>
+                        <p>Straightforward solution: use backward iteration.</p>
 
                         <pre><code class="lua" data-trim>
 local t = {1, 2, 3, 4}
@@ -364,7 +393,7 @@ Output:
 ]]
                         </code></pre>
 
-                        <p>We will see another misuse case of table.remove when we discuss iterator ;)</p>
+                        <p>We will see another misuse case of <code>table.remove</code> when we discuss iterator ;)</p>
                     </section>
 
                     <section>
