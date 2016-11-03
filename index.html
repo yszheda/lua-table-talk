@@ -243,7 +243,7 @@ e1
 ]]
                         </code></pre>
 
-                        <p>There's another way of using an <b>iterator</b>. We will talk about that later.</p>
+                        <p class="fragment">There's another way of using an <b>iterator</b>. We will talk about that later.</p>
                     </section>
 
                     <section>
@@ -341,7 +341,7 @@ stack traceback:
 ]]
                         </code></pre>
 
-                        <p>Why?</p>
+                        <p class="fragment">Why?</p>
                     </section>
 
                     <section>
@@ -393,7 +393,7 @@ Output:
 ]]
                         </code></pre>
 
-                        <p>We will see another misuse case of <code>table.remove</code> when we discuss iterator ;)</p>
+                        <p class="fragment">We will see another misuse case of <code>table.remove</code> when we discuss iterator ;)</p>
                     </section>
 
                     <section>
@@ -511,9 +511,9 @@ k2      v2
 
                     <section>
                         <h4>Table As A Hashtable: Iteration</h4>
-                        <p>What if we don't know there's three key-value pairs in the table `t`?</p>
+                        <p>What if we don't know there's three key-value pairs in the table `<code>t</code>`?</p>
 
-                        <pre><code class="lua" data-trim>
+                        <pre class="fragment"><code class="lua" data-trim>
 local t = {
     k1 = "v1",
     k2 = "v2",
@@ -539,7 +539,7 @@ k3      v3
 
                     <section>
                         <h4>Iterator</h4>
-                        <p>More advance: meet "generic for" in lua</p>
+                        <p>Advanced skill: meet the "generic <code>for</code>" in lua.</p>
 
                         <pre><code class="lua" data-trim>
 for {var-list} in {exp-list} do
@@ -547,7 +547,7 @@ for {var-list} in {exp-list} do
 end
                         </code></pre>
 
-                        <p>We can write an iterator and use it in the generic for loop!</p>
+                        <p class="fragment">Now we can write an iterator and use it in the generic <code>for</code> loop!</p>
                     </section>
 
                     <section>
@@ -598,14 +598,13 @@ k1      v1
 ]]
                         </code></pre>
 
-                        <p>It would be difficult to understand if you don't know anything about closure or lambda! :(</p>
+                        <p class="fragment">It would be difficult to understand if you don't know anything about closure or lambda! :(</p>
                     </section>
 
                     <section>
                         <h4>Iterator</h4>
                         <p>Hand-written iterator (V2): 
-                        we can pass a function and its parameters in {exp-list} of "generic for".
-                        </p>
+                        we can pass a function and its parameters in {exp-list} of "generic <code>for</code>".</p>
 
                         <pre><code class="lua" data-trim>
 local t = {
@@ -626,7 +625,7 @@ k1      v1
 ]]
                         </code></pre>
 
-                        <ul>
+                        <ul class="fragment">
                             <li>Simpler code :)</li>
                             <li>It would still be difficult to understand if you don't know functions in lua are first-class variables! :(</li>
                         </ul>
@@ -634,9 +633,9 @@ k1      v1
 
                     <section>
                         <h4>Iterator</h4>
-                        <p>There's a built-in iterator: "pairs"! XD</p>
+                        <p>There's a built-in iterator: `<code>pairs</code>`! XD</p>
 
-                        <pre><code class="lua" data-trim>
+                        <pre class="fragment"><code class="lua" data-trim>
 local t = {
     k1 = "v1",
     k2 = "v2",
@@ -655,14 +654,14 @@ k2      v2
 ]]
                         </code></pre>
 
-                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-pairs">manual of pairs</a></p>
+                        <p class="fragment">See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-pairs">manual of <code>pairs</code></a></p>
                     </section>
 
                     <section>
                         <h4>Iterator</h4>
-                        <p>There's another built-in iterator for array: "ipairs"! XD</p>
+                        <p>There's another built-in iterator for array: `<code>ipairs</code>`! XD</p>
 
-                        <pre><code class="lua" data-trim>
+                        <pre class="fragment"><code class="lua" data-trim>
 local t = {"e1", "e2", "e3", "e4"}
 
 -- Only forward iteration
@@ -679,11 +678,11 @@ Output:
 ]]
                         </code></pre>
 
-                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-ipairs">manual of ipairs</a></p>
+                        <p class="fragment">See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-ipairs">manual of <code>ipairs</code></a></p>
                     </section>
 
                     <section>
-                        <p>Another common misuse of table.delete in loop</p>
+                        <p>Now we can talk about another common misuse of <code>table.remove</code> in loop.</p>
 
                         <pre><code class="lua" data-trim>
 local t = {1, 2, 3, 4}
@@ -730,14 +729,14 @@ Output:
 ]]
                         </code></pre>
 
-                        <p>The length operator "#" only deals with the array part of table. :(</p>
+                        <p class="fragment">Opps...The length operator <code>"#"</code> only deals with the array part of table. :(</p>
                     </section>
 
                     <section>
                         <h4>Table As A Hashtable: Get the Number of key-value Pairs</h4>
-                        <p>Since we know how to iterator over the table, we know how to count all the key-value pairs. :)</p>
+                        <p class="fragment">Since we know how to iterator over the table, we know how to count all the key-value pairs. :)</p>
 
-                        <pre><code class="lua" data-trim>
+                        <pre class="fragment"><code class="lua" data-trim>
 local t = {
     k1 = "v1",
     k2 = "v2",
@@ -757,7 +756,7 @@ Output:
 ]]
                         </code></pre>
 
-                        <p>Complexity: O(N)</p>
+                        <p class="fragment">Complexity: O(N)</p>
                     </section>
 
                 </section>
@@ -994,7 +993,7 @@ end
                 <section>
                     <section>
                         <h2>Dive into lua Source Code</h2>
-                        <p>I will omit some code for simplicity. XD</p>
+                        <p>I omit and modify some code for simplicity. XD</p>
                     </section>
 
                     <section>
