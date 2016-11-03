@@ -428,7 +428,7 @@ t[key] = "value"
                     </section>
 
                     <section>
-                        <h4>Table As A Hashtable: Setter</h4>
+                        <h4>Table As A Hashtable: Getter</h4>
 
                         <pre><code class="lua" data-trim>
 local t = {
@@ -467,13 +467,20 @@ t.key = nil
 
                     <section>
                         <h4>Table As A Hashtable: Iteration</h4>
+                        <p>?</p>
+                    </section>
 
-                        <p>Meet "next (table [, index])"</p>
+                    <section>
+                        <h4>Table As A Hashtable: Iteration</h4>
+                        <p>Meet `<code>next (table [, index])</code>`</p>
 
                         <blockquote>
-                            <p style="font-size: 18px;">Allows a program to traverse all fields of a table. Its first argument is a table and its second argument is an index in this table. next returns the next index of the table and its associated value. When called with nil as its second argument, next returns an initial index and its associated value. When called with the last index, or with nil in an empty table, next returns nil. If the second argument is absent, then it is interpreted as nil. In particular, you can use next(t) to check whether a table is empty.</p>
+                            <p style="font-size: 28px;">Allows a program to traverse all fields of a table. Its first argument is a table and its second argument is an index in this table. next returns the next index of the table and its associated value. When called with nil as its second argument, next returns an initial index and its associated value. When called with the last index, or with nil in an empty table, next returns nil. If the second argument is absent, then it is interpreted as nil. In particular, you can use next(t) to check whether a table is empty.</p>
                         </blockquote>
+                    </section>
 
+                    <section>
+                        <h4>Table As A Hashtable: Iteration</h4>
                         <pre><code class="lua" data-trim>
 local t = {
     k1 = "v1",
@@ -499,7 +506,7 @@ k2      v2
 ]]
                         </code></pre>
 
-                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-next">manual of next</a></p>
+                        <p>See the <a href="https://www.lua.org/manual/5.2/manual.html#pdf-next">manual of <code>next</code></a></p>
                     </section>
 
                     <section>
