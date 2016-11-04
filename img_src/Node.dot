@@ -1,6 +1,7 @@
 digraph ds
 {
-compound=true;
+compound = true;
+splines = line;
 
 subgraph cluster_Node
 {
