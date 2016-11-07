@@ -1,0 +1,9 @@
+digraph instruction
+{
+rankdir = LR;
+node[shape = record];
+
+instr[
+label = "32-bit instruction | { { { { { B (9-bit) | C (9-bit) } | Bx (18-bit) | sBx (18-bit) } | A (8-bit) } | Ax (26-bit) } | Opcode (6-bit) }"
+];
+}
