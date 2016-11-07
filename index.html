@@ -1320,7 +1320,16 @@ typedef union TKey {
                     <section>
                         <h4>Brief introduction of lua VM and its instructions</h4>
                         <ul>
-                            <li>Register-based</li>
+                            <li>fixed size (32 bit unsigned integer)</li>
+                            <li>register-based</li>
+                            <li>instruction formats (`sBx' : signed Bx):</li>
+                            <img align="middle" data-src="img/instruction.png">
+                            <li>We will meet the following guys later:
+                            <ul>
+                                <li>R(A) : Register A</li>
+                                <li>RK(B) : Register B or a constant index</li>
+                            </ul>
+                            </li>
                         </ul>
                     </section>
 
@@ -1352,7 +1361,8 @@ local t = {}
 
                         <ul>
                             <li>Creates a new empty table at register R(A).</li>
-                            <li>B and C are the encoded size information for the array part and the hash part of the table, respectively. Appropriate values for B and C are set in order to avoid rehashing when initially populating the table with array values or hash key-value pairs. If an empty table is created, both sizes are zero.</li>
+                            <li>B: encoded size information for the array part of the table.</li>
+                            <li>C: encoded size information for the hash part of the table.</li>
                         </ul>
 
                     </section>
@@ -1396,11 +1406,13 @@ void luaV_execute (lua_State *L) {
   }
 }
                         </code></pre>
+
+                        <p class="fragment">A bit comfused?</p>
                     </section>
 
                     <section>
                         <h4>Execute NEWTABLE in lua VM</h4>
-                        <p>A bit comfused? We only need to trace this part of code for the naive example:</p>
+                        <p>We only need to trace the following part of code for the naive example. ;)</p>
 
                         <pre><code class="c" data-trim>
       vmcase(OP_NEWTABLE,
@@ -1414,7 +1426,7 @@ void luaV_execute (lua_State *L) {
       )
                         </code></pre>
 
-                        <p>Now we only need to look at `luaH_new`. :)</p>
+                        <p class="fragment">Now we only need to look at `<code>luaH_new</code>`. :)</p>
                     </section>
 
                     <section>
@@ -1442,7 +1454,7 @@ static void setnodevector (lua_State *L, Table *t, int size) {
       luaG_runerror(L, "table overflow");
     size = twoto(lsize);
     t->node = luaM_newvector(L, size, Node);
-    for (i=0; i<size; i++) {
+    for (i = 0; i < size; i++) {
       Node *n = gnode(t, i);
       gnext(n) = NULL;
       setnilvalue(gkey(n));
@@ -1454,8 +1466,7 @@ static void setnodevector (lua_State *L, Table *t, int size) {
 }
                         </code></pre>
 
-                        <p>
-                        </p>
+                        <p class="fragment">Comfused by `<code>setnodevector</code>`?</p>
                     </section>
 
                     <section>
@@ -1468,7 +1479,7 @@ Table *luaH_new (lua_State *L) {
   t->sizearray = 0;
   t->node = cast(Node *, dummynode);  /* use common `dummynode' */
   t->lsizenode = 0;
-  t->lastfree = gnode(t, size);  /* all positions are free */
+  t->lastfree = gnode(t, 0);  /* all positions are free */
   return t;
 }
                         </code></pre>
@@ -1476,7 +1487,7 @@ Table *luaH_new (lua_State *L) {
                     </section>
 
                     <section>
-                        <h4>What's dummynode?</h4>
+                        <h4>What's `<code>dummynode</code>`?</h4>
 
                         <pre><code class="c" data-trim>
 /* macro defining a nil value */
@@ -1492,17 +1503,17 @@ static const Node dummynode_ = {
 };
                         </code></pre>
 
-                        <p>All empty table in lua points to the same memory area. CLEVER LUA!</p>
+                        <p class="fragment">All empty table in lua points to the same memory area. CLEVER LUA!</p>
                     </section>
 
                     <section>
-                        <h3>What happens when creating a `Table`?</h3>
+                        <h3>What happens when creating a `<code>Table</code>`?</h3>
                         <h4>What about creating a non-empty table?</h4>
-                        <p>We will come back later. ;)</p>
+                        <p>We will come back to this topic later. ;)</p>
                     </section>
 
                     <section>
-                        <h3>What happens when accessing a `Table`?</h3>
+                        <h3>What happens when accessing a `<code>Table</code>`?</h3>
                     </section>
 
                     <section>
@@ -1536,19 +1547,25 @@ return t[1]
                             GETTABLE A B C R(A) := R(B)[RK(C)]
                         </blockquote>
 
-                        <p>Copies the value from a table element into register R(A). The table is referenced by register R(B), while the index to the table is given by RK(C), which may be the value of register R(C) or a constant number.</p>
+                        <ul>
+                            <li>Copies the value from a table element into register R(A).</li>
+                            <li>The table is referenced by register R(B). </li>
+                            <li>The index to the table is given by RK(C), which may be the value of register R(C) or a constant number.
+                        </ul>
 
                     </section>
 
                     <section>
                         <h4>Execute GETTABLE in lua VM</h4>
-                        <p>Look at the for loop in `luaV_execute` (lvm.c):</p>
+                        <p>Look at the for loop in `<code>luaV_execute</code>` (lvm.c):</p>
 
                         <pre><code class="c" data-trim>
       vmcase(OP_GETTABLE,
         Protect(luaV_gettable(L, RB(i), RKC(i), ra));
       )
                         </code></pre>
+
+                        <p class="fragment">Now we need to look at `<code>luaV_gettable</code>`. :)</p>
                     </section>
 
                     <section>
@@ -1571,7 +1588,7 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
 }
                         </code></pre>
 
-                        <p>Now only the function <code>`luaH_get`</code> causes our headaches.</p>
+                        <p class="fragment">Now only the function `<code>luaH_get</code>` causes our headaches.</p>
 
                     </section>
 
