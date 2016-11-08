@@ -1014,9 +1014,6 @@ typedef struct Table {
   int sizearray;  /* size of `array' array */
 } Table;
                         </code></pre>
-
-                        <p>lobject.c - some generic functions over Lua objects.</p>
-
                     </section>
 
                     <section>
@@ -1054,10 +1051,12 @@ typedef struct Table {
                         <pre><code class="c" data-trim>
 #define gnode(t,i)  (&(t)->node[i])
                         </code></pre>
+
+                        <p>We will meet this macro later. ;)</p>
                     </section>
 
                     <section>
-                        <h4>What is `Node`?</h4>
+                        <h4>What is `<code>Node</code>`?</h4>
 
                         <pre><code class="c" data-trim>
 typedef struct Node {
@@ -1066,18 +1065,18 @@ typedef struct Node {
 } Node;
                         </code></pre>
 
-                        <p>`Node` is the structure for key-value pair</p>
+                        <p>`<code>Node</code>` is the structure for key-value pair</p>
                     </section>
 
                     <section>
-                        <p>Macros related to `Node`:</p>
+                        <p>Macros related to `<code>Node</code>`:</p>
                         <pre><code class="c" data-trim>
 #define gval(n)     (&(n)->i_val)
                         </code></pre>
                     </section>
 
                     <section>
-                        <h4>What is `TValue` then?</h4>
+                        <h4>What is `<code>TValue</code>` then?</h4>
 
                         <pre><code class="c" data-trim>
 typedef struct lua_TValue TValue;
@@ -1093,18 +1092,16 @@ struct lua_TValue {
 };
                         </code></pre>
 
-                        <p>`TValue` = Tagged Value</p>
+                        <p>`<code>TValue</code>` = Tagged Value</p>
                         <ul>
-                            <li>`TValue` contains the value and a type tag</li>
+                            <li>`<code>TValue</code>` contains the value and a type tag</li>
                             <li>Lua represents values as tagged unions, that is, as pairs (t, v), where t is an integer tag identifying the type of the value v, which is a union of C types implementing Lua types.</li>
                             <li>omitted source code: NaN Trick</li>
                         </ul>
                     </section>
 
                     <section>
-                        <p>Macros related to `TValue`:</p>
-
-                        <p>(We will meet these macros later. ;) )</p>
+                        <p>Macros related to `<code>TValue</code>`:</p>
 
                         <pre><code class="c" data-trim>
 #define val_(o)     ((o)->value_)
@@ -1117,6 +1114,8 @@ struct lua_TValue {
     { const TValue *io2=(obj2); TValue *io1=(obj1); \
       io1->value_ = io2->value_; io1->tt_ = io2->tt_; }
                         </code></pre>
+
+                        <p>We will meet these macros later. ;)</p>
                     </section>
 
                     <section>
@@ -1147,8 +1146,6 @@ struct lua_TValue {
                     <section>
                         <h4>How does the tag distinguish different types of lua value?</h4>
 
-                        <p>We will meet these macros later. ;)</p>
-
                         <pre><code class="c" data-trim>
 /* raw type tag of a TValue */
 #define rttype(o)   ((o)->tt_)
@@ -1161,11 +1158,11 @@ struct lua_TValue {
 #define hvalue(o)   check_exp(ttistable(o), &val_(o).gc->h)
                         </code></pre>
 
-                        <p>Simplified code here</p>
+                        <p>Again, we will meet these macros later. ;)</p>
                     </section>
 
                     <section>
-                        <h4>What is `Value`?</h4>
+                        <h4>What is `<code>Value</code>`?</h4>
 
                         <pre><code class="c" data-trim>
 union Value {
@@ -1177,23 +1174,19 @@ union Value {
 };
                         </code></pre>
 
-<!--
-                        <p>Can `Value` distinguish different types of lua value?</p>
--->
-
-                        <p>`Value` can be:</p>
-                        <ul>
-                            <li>nil? No! Tag of `TValue` is enough.</li>
-                        </ul>
-                        <pre><code class="c" data-trim>
+                        <p>`<code>Value</code>` can be:</p>
+                        <ul class="fragment">
+                            <li>`<code>nil</code>`? No! Tag of `<code>TValue</code>` is enough.</li>
+                            <pre><code class="c" data-trim>
 #define settt_(o,t) ((o)->tt_=(t))
 #define setnilvalue(obj) settt_(obj, LUA_TNIL)
 #define ttisnil(o)      checktag((o), LUA_TNIL)
-                        </code></pre>
+                            </code></pre>
+                        </ul>
                     </section>
 
                     <section>
-                        <h4>What is `Value`?</h4>
+                        <h4>What is `<code>Value</code>`?</h4>
 
                         <pre><code class="c" data-trim>
 union Value {
@@ -1205,10 +1198,10 @@ union Value {
 };
                         </code></pre>
 
-                        <p>`Value` can be:</p>
+                        <p>`<code>Value</code>` can be:</p>
                         <ul>
-                            <li>boolean? Yes! `Value` = `b`</li>
-                            <li>number? Yes! `Value` = `n`
+                            <li class="fragment">boolean? Yes! `Value` = `b`</li>
+                            <li class="fragment">number? Yes! `Value` = `n`
                             <pre><code class="c" data-trim>
 #define val_(o)		((o)->value_)
 #define num_(o)		(val_(o).n)
@@ -1217,13 +1210,13 @@ union Value {
   { TValue *io=(obj); num_(io)=(x); settt_(io, LUA_TNUMBER); }
                             </code></pre>
                             </li>
-                            <li>light userdata? Yes! `Value` = `p`</li>
-                            <li>light C functions? Yes! `Value` = `f`</li>
+                            <li class="fragment">light userdata? Yes! `Value` = `p`</li>
+                            <li class="fragment">light C functions? Yes! `Value` = `f`</li>
                         </ul>
                     </section>
 
                     <section>
-                        <h4>What is `Value`?</h4>
+                        <h4>What is `<code>Value</code>`?</h4>
 
                         <pre><code class="c" data-trim>
 union Value {
@@ -1235,19 +1228,19 @@ union Value {
 };
                         </code></pre>
 
-                        <p>`Value` can be:</p>
-                        <ul>
-                            <li>string, table, other function, heavy userdata, thread? `Value` = `gc`</li>
-                        </ul>
-                        <pre><code class="c" data-trim>
+                        <p>`<code>Value</code>` can be:</p>
+                            <ul class="fragment">
+                                <li>string, table, other function, heavy userdata, thread? `Value` = `gc`</li>
+                                <pre><code class="c" data-trim>
 #define sethvalue(L,obj,x) \
   { TValue *io=(obj); \
     val_(io).gc=cast(GCObject *, (x)); settt_(io, LUA_TTABLE); }
-                        </code></pre>
-                    </section>
+                                </code></pre>
+                            </ul>
+                        </section>
 
                     <section>
-                        <h4>What is `GCObject` then?</h4>
+                        <h4>What is `<code>GCObject</code>` then?</h4>
 
                         <p>lstate.h</p>
 
@@ -1268,17 +1261,15 @@ union GCObject {
   struct lua_State th;  /* thread */
 };
                         </code></pre>
-
-                        <p>lstate.c - global state. Includes functions for opening and closing Lua states (lua_newstate/lua_close) and threads (luaE_newthread / luaE_freethread).</p>
                     </section>
 
                     <section>
-                        <h4>What is `TValue`?</h4>
+                        <h4>Review: what is `<code>TValue</code>`?</h4>
                         <img align="middle" height="600px;" data-src="img/TValue.png">
                     </section>
 
                     <section>
-                        <h4>What is `TKey`?</h4>
+                        <h4>What is `<code>TKey</code>`?</h4>
 
                         <pre><code class="c" data-trim>
 typedef union TKey {
@@ -1294,7 +1285,7 @@ typedef union TKey {
 
 
                     <section>
-                        <p>Macros related to `TKey`:</p>
+                        <p>Macros related to `<code>TKey</code>`:</p>
                         <pre><code class="c" data-trim>
 #define gkey(n)     (&(n)->i_key.tvk)
 #define gnext(n)    ((n)->i_key.nk.next)
@@ -1302,7 +1293,8 @@ typedef union TKey {
                     </section>
 
                     <section>
-                        <h4>Combine `TValue` and `TKey` into `Node`</h4>
+                        <h4>Review: what is `<code>Node</code>`?</h4>
+                        <p>Combine `<code>TValue</code>` and `<code>TKey</code>` into `<code>Node</code>`.</p>
                         <img align="middle" data-src="img/Node.png">
                     </section>
 
