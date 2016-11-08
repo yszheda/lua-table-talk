@@ -1020,21 +1020,26 @@ typedef struct Table {
                     </section>
 
                     <section>
-                        <h4>What does `Table` contain?</h4>
+                        <h4>What does `<code>Table</code>` contain?</h4>
                         <ul>
-                            <li>A `Table` instance has at lease three continued areas in memory:
+                            <li>A `<code>Table</code>` instance has at lease three continued areas in memory:
                             <ul>
-							<img align="middle" data-src="img/Table-simple.png">
-                                <li>The `Table` instance itself.</li>
-                                <li>`array`: array part of `Table`</li>
-                                <li>`node`: hash part of `Table`</li>
+                                <img align="middle" data-src="img/Table-simple.png">
+                                <li>The `<code>Table</code>` instance itself.</li>
+                                <li>`<code>array</code>`: array part of `<code>Table</code>`</li>
+                                <li>`<code>node</code>`: hash part of `<code>Table</code>`</li>
                             </ul>
-
                             </li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4>What does `<code>Table</code>` contain?</h4>
+                        <ul>
                             <li>Fields of recording the size:
                             <ul>
-                                <li>size of array part: `sizearray`</li>
-                                <li>size of hash part: 2^`lsizenode`</li>
+                                <li>size of array part: `<code>sizearray</code>`</li>
+                                <li>size of hash part: 2^`<code>lsizenode</code>`</li>
                                 <pre><code class="c" data-trim>
 #define twoto(x)    (1<<(x))
 #define sizenode(t) (twoto((t)->lsizenode))
@@ -1045,7 +1050,7 @@ typedef struct Table {
                     </section>
 
                     <section>
-                        <p>Macros related to `Table`:</p>
+                        <p>Macros related to `<code>Table</code>`:</p>
                         <pre><code class="c" data-trim>
 #define gnode(t,i)  (&(t)->node[i])
                         </code></pre>
@@ -2009,8 +2014,21 @@ t[5] = "e5"
                         <li>...</li>
                     </ul>
                 </section>
-			</div>
-		</div>
+
+                <section>
+                    <h2>Backup slides for writing lua code</h2>
+                    <pre><code class="lua" data-trim contenteditable>
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Backup slides for writing c code</h2>
+                    <pre><code class="c" data-trim contenteditable>
+                    </code></pre>
+                </section>
+
+            </div>
+        </div>
 
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.js"></script>
