@@ -1569,7 +1569,7 @@ return t[1]
                         <h4>Execute GETTABLE in lua VM</h4>
 
                         <pre><code class="c" data-trim>
-void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
+void luaV_gettable (lua_State *L, const TValue *t, TValue *key, TValue *val) {
     // Remember this macro: `ttistable` ? ;)
     if (ttistable(t)) {  /* `t' is a table? */
       // Remember this macro: `hvalue` ? ;)
