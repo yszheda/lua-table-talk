@@ -1590,7 +1590,7 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, TValue *val) {
                     </section>
 
                     <section>
-                        <h4>Dive into <code>luaH_get</code></h4>
+                        <h4>Dive into `<code>luaH_get</code>`</h4>
 
                         <pre><code class="c" data-trim>
 /*
@@ -1636,11 +1636,11 @@ const TValue *luaH_get (Table *t, const TValue *key) {
 }
                         </code></pre>
 
-                        <p>What's the so-called specialized function <code>`luaH_getint`</code>?</p>
+                        <p class="fragment">What's the so-called specialized function `<code>luaH_getint</code>`?</p>
                     </section>
 
                     <section>
-                        <h4>Dive into <code>luaH_get</code></h4>
+                        <h4>Dive into `<code>luaH_get</code>`</h4>
 
                         <pre><code class="c" data-trim>
 /*
@@ -1684,7 +1684,7 @@ const TValue *luaH_getint (Table *t, int key) {
                     </section>
 
                     <section>
-                        <h4>Dive into <code>luaH_get</code></h4>
+                        <h4>Dive into `<code>luaH_get</code>`</h4>
 
                         <p>Lua table uses <b>open addressing</b> to resolve hash collision:</p>
 
@@ -1692,15 +1692,15 @@ const TValue *luaH_getint (Table *t, int key) {
                     </section>
 
                     <section>
-                        <h4>Dive into <code>luaH_get</code></h4>
+                        <h4>Dive into `<code>luaH_get</code>`</h4>
                         <ul>
                             <li>Lua defines the index of the hash part of table as "mainposition".</li>
-                            <li>The rest part of <code>luaH_get</code> is similar to <code>luaH_getint</code>. XD</li>
+                            <li>The rest part of `<code>luaH_get</code>` is similar to `<code>luaH_getint</code>`. XD</li>
                         </ul>
                     </section>
 
                     <section>
-                        <h3>What happens when setting the value of a `Table` element?</h3>
+                        <h3>What happens when setting the value of a `<code>Table</code>` element?</h3>
                     </section>
 
                     <section>
@@ -1732,7 +1732,11 @@ t[1] = 3
                             SETTABLE A B C R(A)[RK(B)] := RK(C)
                         </blockquote>
 
-                        <p>Copies the value from register R(C) or a constant into a table element. The table is referenced by register R(A), while the index to the table is given by RK(B), which may be the value of register R(B) or a constant number.</p>
+                        <ul>
+                            <li>Copies the value from register R(C) or a constant into a table element.</li>
+                            <li>The table is referenced by register R(A).</li>
+                            <li>The index to the table is given by RK(B), which may be the value of register R(B) or a constant number.</p>
+                        </ul>
                     </section>
 
                     <section>
@@ -1745,13 +1749,13 @@ t[1] = 3
       )
                         </code></pre>
 
-                        <p>It looks like `GETTABLE`. XD</p>
+                        <p class="fragment">It looks like the case of `<code>GETTABLE</code>`. XD</p>
                     </section>
 
                     <section>
                         <h4>Execute SETTABLE in lua VM</h4>
 
-                        <p>Now look at function `luaV_settable`:</p>
+                        <p>Now look at function `<code>luaV_settable</code>`:</p>
 
                         <pre><code class="c" data-trim>
 void luaV_settable (lua_State *L, const TValue *t, TValue *key, TValue *val) {
@@ -1759,14 +1763,11 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, TValue *val) {
         Table *h = hvalue(t);
         // Remember `luaH_get`?
         TValue *oldval = cast(TValue *, luaH_get(h, key));
-        /*  if previous value is not nil, there must be a previous entry
-         *           in the table; moreover, a metamethod has no relevance */
+        /*  is there a previous entry in the table? */
         if (!ttisnil(oldval) ||
-                /*  is there a previous entry in the table? */
-                ((oldval != {NILCONSTANT} ||
-                  /*  no previous entry; must create one. (The next test is
-                   *              always true; we only need the assignment.) */
-                  (oldval = luaH_newkey(L, h, key), 1)))) {
+            /*  no previous entry; must create one. (The next test is
+             *              always true; we only need the assignment.) */
+            (oldval = luaH_newkey(L, h, key), 1)) {
             /*  (now) there is an entry with given key */
             setobj(L, oldval, val);  /*  assign new value to that entry */
         }
