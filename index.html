@@ -1775,6 +1775,8 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, TValue *val) {
     return;
 }
                         </code></pre>
+
+                        <p class="fragment">C trick of comma operator: <code>(a, b, c)</code> is a sequence of expressions, separated by commas, which evaluates to the last expression <code>c</code>.</p>
                     </section>
 
                     <section>
@@ -1783,7 +1785,7 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, TValue *val) {
                             <li>Get the old value of the key.</li>
                             <li>If
                             <ul>
-                                <li>The old value is nil or {NILCONSTANT}: Create a new key by <code>luaH_newkey</code> and write the corresponding value.</li>
+                                <li>The old value is <code>nil</code>: create a new key by `<code>luaH_newkey</code>` and write the corresponding value.</li>
                                 <li>Otherwises, rewrite the value.</li>
                             </ul>
                             </li>
@@ -1836,7 +1838,7 @@ TValue *luaH_newkey (lua_State *L, Table *t, const TValue *key) {
 }
                         </code></pre>
 
-                        <p>Don't be scared, we will take it apart. ;D</p>
+                        <p class="fragment">Don't be scared, we will take it apart. ;D</p>
                     </section>
 
                     <section>
@@ -1910,13 +1912,13 @@ TValue *luaH_newkey (lua_State *L, Table *t, const TValue *key) {
                         <h4>Case 4</h4>
                         <p>There's no free space. :(</p>
 
-                        <p>It will cause rehashing.</p>
+                        <p class="fragment">It will cause <b>rehashing</b>.</p>
                         <ul>
-                            <li>The hash part is full: double the hash part. (Remember the `lsizenode` field of `Table`)</li>
-                            <li>The array part may grow (by doubling the size) or shrink (so that at lease half of the array is occupied).</li>
+                            <li class="fragment">The hash part is full: double the hash part. (Remember the `<code>lsizenode</code>` field of `<code>Table</code>`?)</li>
+                            <li class="fragment">The array part may grow (by doubling the size) or shrink (so that at lease half of the array is occupied).</li>
                         </ul>
 
-                        <p>I will not show the source code of rehashing in order not to scare you. XD</p>
+                        <p class="fragment">I will not show the source code of rehashing in order not to scare you. XD</p>
                     </section>
 
                     <section>
@@ -1953,9 +1955,9 @@ local t = {"e1", "e2", "e3", "e4", "e5"}
 local t = {}
 t[1] = "e1"     -- rehash
 t[2] = "e2"     -- rehash
-t[3] = "e3"
-t[4] = "e4"     -- rehash
-t[5] = "e5"
+t[3] = "e3"     -- rehash
+t[4] = "e4"
+t[5] = "e5"     -- rehash
                         </code></pre>
 
                     </section>
