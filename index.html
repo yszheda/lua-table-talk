@@ -1922,7 +1922,7 @@ TValue *luaH_newkey (lua_State *L, Table *t, const TValue *key) {
                     </section>
 
                     <section>
-                        <h4>Back to the topic of creating a non-empty table XD</h4>
+                        <h3>Back to the topic of creating a non-empty table XD</h3>
 
                         <p>What's the difference between the following code snippets?</p>
 
@@ -1942,7 +1942,7 @@ t[5] = "e5"
                     </section>
 
                     <section>
-                        <h2>Counting the occurrences of rehashing:</h2>
+                        <h3>Counting the occurrences of rehashing:</h3>
 
                         <p>Zero rehash, resize the array part once at table creation. :)</p>
                         <pre><code class="lua" data-trim>
@@ -1950,7 +1950,7 @@ local t = {"e1", "e2", "e3", "e4", "e5"}
                         </code></pre>
 
 
-                        <p>Rehash triple times at SETTABLE. :(</p>
+                        <p>Rehash four times at SETTABLE. :(</p>
                         <pre><code class="lua" data-trim>
 local t = {}
 t[1] = "e1"     -- rehash
@@ -1960,44 +1960,16 @@ t[4] = "e4"
 t[5] = "e5"     -- rehash
                         </code></pre>
 
+                        <p class="fragment">The rehashing overhead can be much higher if there's lots of small table in your lua program.</p>
                     </section>
 
                     <section>
-                        <h2></h2>
-                        <p>
-                        </p>
+                        <h3>Lesson learned</h3>
+                        <p>Prefer this way to avoid initial rehashings of table.</p>
+                        <pre><code class="lua" data-trim>
+local t = {"e1", "e2", "e3", "e4", "e5"}
+                        </code></pre>
                     </section>
-
-                    <section>
-                        <h2></h2>
-                        <p>
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2></h2>
-                        <p>
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2></h2>
-                        <p>
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2></h2>
-                        <p>
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2></h2>
-                        <p>
-                        </p>
-                    </section>
-
                 </section>
 
 				<section>
@@ -2005,8 +1977,19 @@ t[5] = "e5"     -- rehash
                     <ul>
                         <li>metatable</li>
                         <li>OO in lua</li>
-                        <li>Special table: `{}` (we have meet it), `_ENV`, `_G`, etc.</li>
+                        <li>Special table: `<code>{}</code>` (we have meet it), `<code>_ENV</code>`, `<code>_G</code>`, etc.</li>
                         <li>...</li>
+                    </ul>
+                </section>
+
+				<section>
+                    <h2>References</h2>
+                    <ul>
+                        <li><a href="https://www.lua.org/">lua official website</a></li>
+                        <li>"The Implementation of Lua 5.0" by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes</li>
+                        <li>"Programming in Lua" by the leading architect of lua, Roberto Ierusalimschy: <a href="http://www.lua.org/pil/contents.html">First version is free online (lua 5.0)</a></li>
+                        <li>"A No-Frills Introduction to Lua 5.1 VM Instructions" by Kein-Hong Man</li>
+                        <li>"Lua Performance Tips" by Roberto Ierusalimschy</li>
                     </ul>
                 </section>
 
