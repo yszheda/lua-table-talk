@@ -203,13 +203,12 @@ print(select('#', "e1", "e2", "e3", "e4"))
 print(select('#', table.unpack(t)))
                         </code></pre>
 
-                        <p style="font-size: 24px;">Refer to:
+                        <p style="font-size: 24px;">Refer to:</p>
                         <ul style="font-size: 24px;">
                             <li><a href="https://www.lua.org/manual/5.2/manual.html#3.4.6">manual of the length operator "#"</a></li>
                             <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-select">manual of <code>select</code></a></li>
                             <li><a href="https://www.lua.org/manual/5.2/manual.html#pdf-table.unpack">manual of <code>table.unpack</code></a></li>
                         </ul>
-                        </p>
                     </section>
 
                     <section>
@@ -1074,10 +1073,10 @@ typedef struct Table {
 
                     <section>
                         <h4>What does `<code>Table</code>` contain?</h4>
+                        <img align="middle" data-src="img/Table-simple.png">
                         <ul>
                             <li>A `<code>Table</code>` instance has at lease three continued areas in memory:
                             <ul>
-                                <img align="middle" data-src="img/Table-simple.png">
                                 <li>The `<code>Table</code>` instance itself.</li>
                                 <li>`<code>array</code>`: array part of `<code>Table</code>`</li>
                                 <li>`<code>node</code>`: hash part of `<code>Table</code>`</li>
@@ -1092,11 +1091,12 @@ typedef struct Table {
                             <li>Fields of recording the size:
                             <ul>
                                 <li>size of array part: `<code>sizearray</code>`</li>
-                                <li>size of hash part: 2^`<code>lsizenode</code>`</li>
+                                <li>size of hash part: 2^`<code>lsizenode</code>`
                                 <pre><code class="c" data-trim>
 #define twoto(x)    (1<<(x))
 #define sizenode(t) (twoto((t)->lsizenode))
                                 </code></pre>
+                                </li>
                             </ul>
                             </li>
                         </ul>
@@ -1232,12 +1232,12 @@ union Value {
 
                         <p>`<code>Value</code>` can be:</p>
                         <ul class="fragment">
-                            <li>`<code>nil</code>`? No! Tag of `<code>TValue</code>` is enough.</li>
+                            <li>`<code>nil</code>`? No! Tag of `<code>TValue</code>` is enough.
                             <pre><code class="c" data-trim>
 #define settt_(o,t) ((o)->tt_=(t))
 #define setnilvalue(obj) settt_(obj, LUA_TNIL)
 #define ttisnil(o)      checktag((o), LUA_TNIL)
-                            </code></pre>
+                            </code></pre></li>
                         </ul>
                     </section>
 
@@ -1286,12 +1286,13 @@ union Value {
 
                         <p>`<code>Value</code>` can be:</p>
                             <ul class="fragment">
-                                <li>string, table, other function, heavy userdata, thread? `Value` = `gc`</li>
+                                <li>string, table, other function, heavy userdata, thread? `Value` = `gc`
                                 <pre><code class="c" data-trim>
 #define sethvalue(L,obj,x) \
   { TValue *io=(obj); \
     val_(io).gc=cast(GCObject *, (x)); settt_(io, LUA_TTABLE); }
                                 </code></pre>
+                                </li>
                             </ul>
                         </section>
 
@@ -1376,8 +1377,9 @@ typedef union TKey {
                         <ul>
                             <li>fixed size (32 bit unsigned integer)</li>
                             <li>register-based</li>
-                            <li>instruction formats (`sBx' : signed Bx):</li>
+                            <li>instruction formats (`sBx' : signed Bx):
                             <img align="middle" data-src="img/instruction.png">
+                            </li>
                             <li>We will meet the following guys later:
                             <ul>
                                 <li>R(A) : Register A</li>
