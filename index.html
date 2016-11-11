@@ -869,6 +869,20 @@ end
                         <h3>Stacks</h3>
 
                         <pre><code class="lua" data-trim>
+-- Use Stack as a namespace
+local Stack = {}
+
+function Stack.push(stack, element)
+    table.insert(stack, element)
+end
+
+function Stack.pop(stack)
+    table.remove(stack)
+end
+
+function Stack.top(stack)
+    return stack[#stack]
+end
                         </code></pre>
                     </section>
 
