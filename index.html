@@ -816,11 +816,57 @@ end
                         <h3>Linked Lists</h3>
 
                         <pre><code class="lua" data-trim>
+-- local node = {next = node, value = v}
+-- local list = first_node
+
+function traverse(list)
+    local node = list
+    while node do
+        print(node.value)
+        node = node.next
+    end
+end
+
+-- We counting the nodes from 1
+function insert_kth_node(list, k, node)
+    assert(k > 0, "invalid k")
+
+    -- Insert from front
+    if k == 1 then
+        node.next = list
+        return
+    end
+
+    local previous_node = list
+    for i = 1, k-1 do
+        assert(previous_node.next, "invalid k")
+        previous_node = previous_node.next
+    end
+
+    node.next = previous_node.next
+    previous_node.next = node
+end
+
+function delete_kth_node(list, k)
+    assert(k > 0, "invalid k")
+
+    local previous_node = list
+    for i = 1, k-1 do
+        assert(previous_node.next, "invalid k")
+        previous_node = previous_node.next
+    end
+
+    local node = previous_node.next
+    if node then
+        previous_node.next = node.next
+        node = nil      -- to allow garbage collection
+    end
+end
                         </code></pre>
                     </section>
 
                     <section>
-                        <h3>Stack</h3>
+                        <h3>Stacks</h3>
 
                         <pre><code class="lua" data-trim>
                         </code></pre>
