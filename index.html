@@ -485,7 +485,7 @@ t.key = nil
 
                     <section>
                         <h4>Table As A Hashtable: Iteration</h4>
-                        <p>?</p>
+                        <img align="middle" alt="" src="img/fun.jpg">
                     </section>
 
                     <section>
@@ -1073,7 +1073,7 @@ typedef struct Table {
 
                     <section>
                         <h4>What does `<code>Table</code>` contain?</h4>
-                        <img align="middle" data-src="img/Table-simple.png">
+                        <img align="middle" alt="" src="img/Table-simple.png">
                         <ul>
                             <li>A `<code>Table</code>` instance has at lease three continued areas in memory:
                             <ul>
@@ -1322,7 +1322,7 @@ union GCObject {
 
                     <section>
                         <h4>Review: what is `<code>TValue</code>`?</h4>
-                        <img align="middle" height="600px;" data-src="img/TValue.png">
+                        <img align="middle" height="600" alt="" src="img/TValue.png">
                     </section>
 
                     <section>
@@ -1352,7 +1352,7 @@ typedef union TKey {
                     <section>
                         <h4>Review: what is `<code>Node</code>`?</h4>
                         <p>Combine `<code>TValue</code>` and `<code>TKey</code>` into `<code>Node</code>`.</p>
-                        <img align="middle" data-src="img/Node.png">
+                        <img align="middle" alt="" src="img/Node.png">
                     </section>
 
                     <section>
@@ -1362,12 +1362,12 @@ typedef union TKey {
                     <section>
                         <h4>General procedure of Lua program:</h4>
                         <p>Lua programs are not interpreted directly from the textual Lua file, but are compiled into bytecode, which is then run on the Lua virtual machine.</p>
-                        <img align="middle" data-src="img/lua-procedure-simple.png">
+                        <img align="middle" alt="" src="img/lua-procedure-simple.png">
                     </section>
 
                     <section>
                         <h4>General procedure of Lua program:</h4>
-                        <img align="middle" height="500px;" data-src="img/lua-procedure.png">
+                        <img align="middle" height="500" alt="" src="img/lua-procedure.png">
 
                         <p>Here we care about the execution phrase, and we will start our analysis from function `<code>luaV_execute</code>`.</p>
                     </section>
@@ -1378,7 +1378,7 @@ typedef union TKey {
                             <li>fixed size (32 bit unsigned integer)</li>
                             <li>register-based</li>
                             <li>instruction formats (`sBx' : signed Bx):
-                            <img align="middle" data-src="img/instruction.png">
+                            <img align="middle" alt="" src="img/instruction.png">
                             </li>
                             <li>We will meet the following guys later:
                             <ul>
@@ -1747,7 +1747,7 @@ const TValue *luaH_getint (Table *t, int key) {
 
                         <p>Lua table uses <b>open addressing</b> to resolve hash collision:</p>
 
-                        <img align="middle" height="500px;" data-src="img/open-addressing.png">
+                        <img align="middle" height="500" alt="" src="img/open-addressing.png">
                     </section>
 
                     <section>
