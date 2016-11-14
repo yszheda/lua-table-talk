@@ -1973,8 +1973,8 @@ TValue *luaH_newkey (lua_State *L, Table *t, const TValue *key) {
 
                         <p class="fragment">It will cause <b>rehashing</b>.</p>
                         <ul>
-                            <li class="fragment">The hash part is full: double the hash part. (Remember the `<code>lsizenode</code>` field of `<code>Table</code>`?)</li>
-                            <li class="fragment">The array part may grow (by doubling the size) or shrink (so that at lease half of the array is occupied).</li>
+                            <li class="fragment">The array part may grow or shrink so that at lease half of the array is occupied. If the array part shrinks, its rest elements will be inserted into the hash part.</li>
+                            <li class="fragment">The hash part may grow or shrink, too. Its size is determined by the number of valid key-value pair, whose value is not <code>nil</code>, and the number of elements from the shrinked array part. Moreover, the size is guaranteed to be power of two. (Remember the `<code>lsizenode</code>` field of `<code>Table</code>`?)</li>
                         </ul>
 
                         <p class="fragment">I will not show the source code of rehashing in order not to scare you. XD</p>
